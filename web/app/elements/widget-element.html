@@ -1,0 +1,70 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../../bower_components/core-drag-drop/core-drag-drop.html">
+
+<polymer-element name="widget-element">
+    <template>
+        <core-ajax id="getWidgets"
+                auto
+                url="http://localhost:3000/widgets"
+                response="{{widgets}}"
+                handleAs="json">
+        </core-ajax>
+        <core-ajax id="updateWidget"
+                   url="http://localhost:3000/widget/"
+                   method="PUT"
+                   on-core-response="{{updateWidgetResponse}}"
+                   contentType="application/json"
+                   handleAs="json">
+        </core-ajax>
+        <style>
+            .box {
+                display: inline-block;
+                width: 175px;
+                height: 75px;
+                margin: 16px;
+                padding: 16px;
+                border: 2px dashed darkolivegreen;
+            }
+        </style>
+        <span>Hello from <b>widget-element</b>! This is my <i>Shadow DOM</i>.</span>
+        <div>
+            <core-drag-drop></core-drag-drop>
+            <template repeat="{{widget in widgets}}">
+                <div id="{{widget.id}}" on-trackstart="{{selectId}}" class="box" draggable="false">
+                    <b>Id:</b> {{widget.id}}<br>
+                    <b>Name:</b> {{widget.name}}<br>
+                    <b>Doodads:</b> {{widget.doodads}}<br>
+                    <i>Gadget:</i> {{widget.gadget.name}}
+                </div>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            ready:function ready(){
+                this.selectedModel=void 0;
+                this.updateWidgetUrl=this.$.updateWidget.url;
+            },
+            selectId:function selectId(event,detail,sender){
+                this.selectedModel=this.widgets.filter(function(widget){
+                    return widget.id==sender.id;
+                })[0];
+            },
+            associate:function associate(widget,gadget){
+                widget.gadget=gadget;
+                if(widget.gadget.widget){
+                    delete widget.gadget.widget;
+                }
+
+                var updateWidget=this.$.updateWidget;
+                updateWidget.url=this.updateWidgetUrl+widget.id;
+                updateWidget.body=JSON.stringify(widget);
+                updateWidget.go();
+            },
+            updateWidgetResponse:function updateWidgetResponse(){
+                this.$.getWidgets.go();
+            }
+        })
+    </script>
+</polymer-element>

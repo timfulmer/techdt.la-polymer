@@ -1,0 +1,21 @@
+{
+  "name": "techdt.la-polymer",
+  "version": "0.0.0",
+  "authors": [
+    "timfulmer <me@timfulmer.com>"
+  ],
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^0.5",
+    "core-ajax": "Polymer/core-ajax#~0.5.5",
+    "core-drag-drop": "Polymer/core-drag-drop#~0.5.5"
+  }
+}

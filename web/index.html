@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Polymer!</title>
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <link rel="import" href="app/elements/widget-element.html">
+    <link rel="import" href="app/elements/gadget-element.html">
+    <style>
+        .drag-avatar {
+            border: 3px solid green;
+            width: 32px;
+            height: 32px;
+            border-radius: 32px;
+            background-color: whitesmoke;
+        }
+        .drag-avatar-text {
+            padding-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body unresolved>
+<widget-element></widget-element>
+<gadget-element></gadget-element>
+<script>
+    (function dragDrop() {
+        addEventListener('drag-start', function (e) {
+            e.preventDefault();
+            var dragInfo = e.detail,
+                    sourceName=e.srcElement.localName,
+                    source=document.querySelector(sourceName),
+                    sourceModel = source.selectedModel;
+            dragInfo.avatar.className = 'drag-avatar';
+            e.detail.avatar.innerHTML='<div class="drag-avatar-text"><b>'
+                    + sourceName.substring(0,1).toUpperCase()
+                    + ':'+ sourceModel.id + '</b></div>';
+            dragInfo.drag = function drag(dragInfo) {
+                dragInfo.event.preventDefault();
+            };
+            dragInfo.drop = function drop(dragInfo) {
+                dragInfo.event.preventDefault();
+                function findNode(node,property){
+                    var parent=node;
+                    while(parent && (!parent[property] && parent.parentNode)){
+                        parent=parent.parentNode;
+                    }
+                    return parent;
+                }
+                var targetIdNode=findNode(dragInfo.event.relatedTarget,'id'),
+                        targetNode=findNode(dragInfo.event.relatedTarget,'host');
+                if(targetNode && targetIdNode && targetIdNode.id){
+                    var target=document.querySelector(targetNode.host.localName);
+                    target.selectId(null,null,targetIdNode);
+                    source.associate(sourceModel,target.selectedModel);
+                    target.associate(target.selectedModel,sourceModel);
+                }
+            };
+        });
+    })();
+</script>
+</body>
+</html>
